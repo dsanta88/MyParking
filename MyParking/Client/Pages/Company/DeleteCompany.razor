@@ -1,0 +1,69 @@
+﻿@page "/deletecompany/{id}"
+@using MyParking.Shared
+@inject NavigationManager navigationManager
+@inject HttpClient Http
+    <h2>Eliminar Establecimiento</h2>
+
+
+<EditForm Model="@model" OnValidSubmit="Eliminar">
+
+    <div class="row">
+        <div class="col-md-5">
+            <MatStringField @bind-Value="@model.Name" Label="Nombre" Style="width:100%"  Disabled="true"></MatStringField>
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-5">
+            <MatStringField @bind-Value="@model.Address" Label="Dirección" Style="width:100%"  Disabled="true"></MatStringField>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            <MatStringField @bind-Value="@model.Phone" Label="Teléfono" Style="width:100%"  Disabled="true"></MatStringField>
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-5">
+            <MatStringField @bind-Value="@model.Logo" Label="Logo" Style="width:100%" Disabled="true"></MatStringField>
+        </div>
+    </div>
+    <br />
+    <MatThemeProvider Theme="@theme3">
+        <MatButton Raised="true" Icon="cancel" @onclick="Cancelar">Cancelar</MatButton>
+    </MatThemeProvider>
+    <MatThemeProvider Theme="@theme1">
+        <MatButton Raised="true" Icon="done_outline" Type="submit">Aceptar</MatButton>
+    </MatThemeProvider>
+</EditForm>
+<br />
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+    CompanyModel model = new CompanyModel();
+
+
+    MatTheme theme1 = new MatTheme()
+    {
+        Primary = "green",
+    };
+    MatTheme theme3 = new MatTheme()
+    {
+        Primary = "red",
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await Http.GetJsonAsync<CompanyModel>("https://localhost:44320/api/companies/" + id);
+    }
+
+    protected async Task Eliminar()
+    {
+
+        await Http.DeleteAsync("https://localhost:44320/api/companies/" + id);
+        navigationManager.NavigateTo("/indexcompany");
+    }
+
+    void Cancelar()
+    {
+        navigationManager.NavigateTo("/indexcompany");
+    }
+}

@@ -1,0 +1,95 @@
+﻿@page "/indexcompany"
+@using MyParking.Shared
+@inject HttpClient Http
+@using MatBlazor
+@inject NavigationManager navigationManager
+@using Helpers 
+
+
+<h2>Establecimiento</h2>
+<MatThemeProvider Theme="@theme1">
+    <MatButton Raised="true" Icon="add_box" @onclick="Add">Nuevo</MatButton>
+</MatThemeProvider>
+<br />
+
+<MatTable Items="@list" class="mat-elevation-z5" ShowPaging="false" UseSortHeaderRow="true">
+    <MatTableHeader>
+        <MatSortHeaderRow>
+            <MatSortHeader SortId="Name"><span style="width:300px">Nombre</span></MatSortHeader>
+            <MatSortHeader SortId="Phone">Teléfono</MatSortHeader>
+            <MatSortHeader SortId="Address">Dirección</MatSortHeader>
+            <MatSortHeader SortId="Logo">Logo</MatSortHeader>
+            <MatSortHeader ></MatSortHeader>
+            <MatSortHeader ></MatSortHeader>
+        </MatSortHeaderRow>
+    </MatTableHeader>
+    <MatTableRow>
+        <td>@context.Name</td>
+        <td>@context.Phone</td>
+        <td>@context.Address</td>
+        <td>@context.Logo</td>
+        <td>
+            <MatThemeProvider Theme="@theme2">
+                <MatButton Raised="true" Icon="edit" @onclick="@(async () =>  Edit(@context.Id))">Editar</MatButton>
+            </MatThemeProvider>
+        </td>
+        <td>
+            <MatThemeProvider Theme="@theme3">
+                <MatButton Raised="true" Icon="restore_from_trash"  @onclick="@(async () =>  Delete(@context.Id))">Eliminar</MatButton>
+            </MatThemeProvider>
+        </td>
+    </MatTableRow>
+</MatTable>
+
+
+
+@code {
+
+
+    MatTheme theme1 = new MatTheme()
+    {
+        Primary = "green",
+    };
+    MatTheme theme2 = new MatTheme()
+    {
+        Primary = "blue",
+    };
+    MatTheme theme3 = new MatTheme()
+    {
+        Primary = "red",
+    };
+
+    private CompanyModel[] list;
+    ReadJson readJson = new ReadJson();
+    public string urlApi = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        urlApi = readJson.GetUrlAPI();
+        await LoadData();
+    }
+
+    protected async Task LoadData()
+    {
+        
+        list = await Http.GetFromJsonAsync<CompanyModel[]>($"{urlApi}/companies");
+    }
+
+
+    public void Add()
+    {
+        navigationManager.NavigateTo("/createcompany");
+    }
+
+
+    public void Edit(int id)
+    {
+        navigationManager.NavigateTo("/editcompany/" + id);
+    }
+
+
+    public void Delete(int id)
+    {
+        navigationManager.NavigateTo("/deletecompany/" + id);
+    }
+}

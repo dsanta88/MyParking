@@ -1,0 +1,66 @@
+﻿@page "/createcompany"
+@using MyParking.Shared
+@inject HttpClient Http
+@using MatBlazor
+@inject NavigationManager navigationManager
+
+    <h2>Nuevo Establecimiento</h2>
+
+
+<EditForm Model="@model" OnValidSubmit="Save">
+
+    <div class="row">
+        <div class="col-md-5">
+            <MatStringField @bind-Value="@model.Name" Label="Nombre" Style="width:100%" Required="true"></MatStringField>
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-5">
+            <MatStringField @bind-Value="@model.Address" Label="Dirección" Style="width:100%" Required="true"></MatStringField>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            <MatStringField @bind-Value="@model.Phone" Label="Teléfono" Style="width:100%" Required="true"></MatStringField>
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-5">
+            <MatStringField @bind-Value="@model.Logo" Label="Logo" Style="width:100%"></MatStringField>
+        </div>
+    </div>
+    <br />
+    <MatThemeProvider Theme="@theme3">
+        <MatButton Raised="true" Icon="cancel" @onclick="Cancelar" >Cancelar</MatButton>
+    </MatThemeProvider>
+    <MatThemeProvider Theme="@theme1">
+        <MatButton Raised="true" Icon="save" Type="submit">Guardar</MatButton>
+    </MatThemeProvider>
+</EditForm>
+<br />
+@code {
+
+    public CompanyModel model = new CompanyModel();
+
+
+    MatTheme theme1 = new MatTheme()
+    {
+        Primary = "green",
+    };
+    MatTheme theme3 = new MatTheme()
+    {
+        Primary = "red",
+    };
+
+    protected async Task Save()
+    {
+        model.Name = model.Name.ToUpper();
+        model.Address = model.Address.ToUpper();
+
+        await Http.PostAsJsonAsync("https://localhost:44320/api/companies", model);
+        navigationManager.NavigateTo("/indexcompany");
+    }
+
+    protected async Task Cancelar()
+    {
+        navigationManager.NavigateTo("/indexcompany");
+    }
+}
